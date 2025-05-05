@@ -1,13 +1,7 @@
-from fastapi import FastAPI
+import flet as ft
 
-app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+def main(page: ft.Page):
+    return page
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+#ft.app(target=main)
