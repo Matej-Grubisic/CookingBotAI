@@ -1,10 +1,9 @@
-from langchain_ollama import OllamaLLM
+from langchain_community.llms import Ollama  # for completion-style models
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableSequence
 from langchain_core.output_parsers import StrOutputParser
 
-
-llm = OllamaLLM(model="CookAI")
+llm = Ollama(model="llama3.2")
 
 easy_prompt = ChatPromptTemplate.from_messages([
     ("system", "You are a professional chef specialized in giving out easy recipes."),

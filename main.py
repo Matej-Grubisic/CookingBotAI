@@ -6,22 +6,34 @@ def main(page: ft.Page):
     page.theme_mode = "light"
     page.padding = 30
 
-    # Message area (middle section)
+    # Message/chat area
     messages = ft.ListView(expand=True, spacing=10, auto_scroll=True)
 
-    # Dropdown (top)
-    dropdown = ft.Dropdown(
-        label="Choose cooking style",
+    # Cooking style dropdown
+    dropdown_style = ft.Dropdown(
+        label="Cooking Style",
         options=[
             ft.dropdown.Option("French"),
             ft.dropdown.Option("Italian"),
             ft.dropdown.Option("Asian"),
             ft.dropdown.Option("Mexican"),
         ],
-        width=300,
+        width=200,
     )
 
-    # Ingredients input (bottom input bar)
+    # Difficulty dropdown
+    dropdown_difficulty = ft.Dropdown(
+        label="Difficulty",
+        options=[
+            ft.dropdown.Option("Easy"),
+            ft.dropdown.Option("Medium"),
+            ft.dropdown.Option("Hard"),
+            ft.dropdown.Option("Pro"),
+        ],
+        width=150,
+    )
+
+    # Ingredients input box
     ingredients_input = ft.TextField(
         hint_text="Enter ingredients (e.g. chicken, garlic, rice)...",
         multiline=True,
@@ -30,27 +42,35 @@ def main(page: ft.Page):
         expand=True,
     )
 
-    # Respond function (handles button click)
+    # Button click logic
     def respond(e):
-        style = dropdown.value
+        style = dropdown_style.value
+        difficulty = dropdown_difficulty.value
         ingredients = ingredients_input.value.strip()
 
-        if not style:
-            messages.controls.append(ft.Text("⚠️ Please select a cooking style.", color="red"))
+        if not style or not difficulty:
+            messages.controls.append(ft.Text("⚠️ Please select both style and difficulty.", color="red"))
         elif not ingredients:
             messages.controls.append(ft.Text("⚠️ Please enter some ingredients.", color="red"))
         else:
             # User message
-            user_msg = ft.Text(f"🧑‍💻 You: I have {ingredients} and I want a {style} recipe.", weight="bold")
+            user_msg = ft.Text(
+                f"🧑‍💻 You: I have {ingredients} and want a {difficulty} {style} recipe.",
+                weight="bold"
+            )
             messages.controls.append(user_msg)
 
-            # Simulated bot response
-            bot_msg = ft.Text(f"🤖 Cooking Bot: Here's a {style} recipe using your ingredients:\n[Recipe goes here...]", italic=True)
+            # Bot response
+            bot_msg = ft.Text(
+                f"🤖 Cooking Bot: Here's a {difficulty} {style} recipe using your ingredients:\n[Recipe goes here...]",
+                italic=True
+            )
             messages.controls.append(bot_msg)
 
         ingredients_input.value = ""
         page.update()
 
+    # Send button
     send_btn = ft.ElevatedButton("Get Recipe", on_click=respond)
 
     # Layout
@@ -58,12 +78,9 @@ def main(page: ft.Page):
         ft.Column(
             [
                 ft.Text("🍳 Cooking Bot AI", size=32, weight="bold"),
-                dropdown,
+                ft.Row([dropdown_style, dropdown_difficulty], spacing=20),
                 ft.Container(messages, expand=True),
-                ft.Row(
-                    [ingredients_input, send_btn],
-                    alignment=ft.MainAxisAlignment.END,
-                ),
+                ft.Row([ingredients_input, send_btn], alignment=ft.MainAxisAlignment.END),
             ],
             expand=True,
         )

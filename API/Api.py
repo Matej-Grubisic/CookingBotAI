@@ -5,7 +5,7 @@ from langchain.chains import ConversationChain
 from langchain.chains import ConversationChain
 from langchain.prompts import PromptTemplate
 from langchain_community.llms.ollama import Ollama
-from langchain_ollama import ChatOllama
+from langchain_community.chat_models import ChatOllama
 from API.Chains import easy_chain, medium_chain, hard_chain, pro_chain
 from pydantic import BaseModel
 
@@ -22,7 +22,7 @@ llm = ChatOllama(model="ChatAI")
 
 
 
-@app.get("/recipes/easy")
+@app.post("/recipes/easy")
 async def easy_recipe(request: UserRequest):
 
     generated_answer = easy_chain.invoke({
@@ -31,7 +31,7 @@ async def easy_recipe(request: UserRequest):
     })
     return {"Easy Recipe: " : generated_answer}
 
-@app.get("/recipes/medium")
+@app.post("/recipes/medium")
 async def medium_recipe(request: UserRequest):
 
     generated_answer = medium_chain.invoke({
@@ -41,7 +41,7 @@ async def medium_recipe(request: UserRequest):
     })
     return { "Medium Recipe: " : generated_answer}
 
-@app.get("/recipes/hard")
+@app.post("/recipes/hard")
 async def hard_recipe(request: UserRequest):
     generated_answer = hard_chain.invoke({
         "message": request.message,
@@ -50,7 +50,7 @@ async def hard_recipe(request: UserRequest):
     })
     return {"Hard Recipe: ": generated_answer}
 
-@app.get("/recipes/pro")
+@app.post("/recipes/pro")
 async def pro_recipe(request: UserRequest):
     generated_answer = pro_chain.invoke({
         "message": request.message,
