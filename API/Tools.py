@@ -2,40 +2,60 @@ import json
 from langchain.tools import Tool
 import requests
 
-def easy_tool(inputs_str:str)->str:
+def easy_tool(inputs_str: str) -> str:
     inputs = json.loads(inputs_str)
-    message = inputs["message"]
-    food_style = inputs["food_style"]
-    obj = {"message": message, "food_style": {food_style}}
+    obj = {
+        "message": inputs["message"],
+        "food_style": inputs["food_style"],
+        "difficulty": inputs["difficulty"]
+    }
     response = requests.post('http://localhost:8000/recipes/easy', json=obj)
     return response.json()
 
-# Medium Recipe Tool
 def medium_tool(inputs_str: str) -> str:
     inputs = json.loads(inputs_str)
-    message = inputs["message"]
-    food_style = inputs["food_style"]
-    obj = {"message": message, "food_style": food_style}
-    response = requests.post('http://localhost:8000/recipes/medium', json=obj)
-    return response.json()
+    obj = {
+        "message": inputs["message"],
+        "food_style": inputs["food_style"],
+        "difficulty": inputs["difficulty"]
+    }
+    try:
+        response = requests.post('http://localhost:8000/recipes/medium', json=obj)
+        response_data = response.json()
+        recipe = response_data.get("Medium Recipe: ", None)
+        return recipe if recipe else {"error": "Recipe not found"}
+    except Exception as e:
+        return {"error": f"Failed to parse response: {str(e)}"}
 
-# Hard Recipe Tool
 def hard_tool(inputs_str: str) -> str:
     inputs = json.loads(inputs_str)
-    message = inputs["message"]
-    food_style = inputs["food_style"]
-    obj = {"message": message, "food_style": food_style}
-    response = requests.post('http://localhost:8000/recipes/hard', json=obj)
-    return response.json()
+    obj = {
+        "message": inputs["message"],
+        "food_style": inputs["food_style"],
+        "difficulty": inputs["difficulty"]
+    }
+    try:
+        response = requests.post('http://localhost:8000/recipes/hard', json=obj)
+        response_data = response.json()
+        recipe = response_data.get("Hard Recipe: ", None)
+        return recipe if recipe else {"error": "Recipe not found"}
+    except Exception as e:
+        return {"error": f"Failed to parse response: {str(e)}"}
 
-# Pro Recipe Tool
 def pro_tool(inputs_str: str) -> str:
     inputs = json.loads(inputs_str)
-    message = inputs["message"]
-    food_style = inputs["food_style"]
-    obj = {"message": message, "food_style": food_style}
-    response = requests.post('http://localhost:8000/recipes/pro', json=obj)
-    return response.json()
+    obj = {
+        "message": inputs["message"],
+        "food_style": inputs["food_style"],
+        "difficulty": inputs["difficulty"]
+    }
+    try:
+        response = requests.post('http://localhost:8000/recipes/pro', json=obj)
+        response_data = response.json()
+        recipe = response_data.get("Pro Recipe: ", None)
+        return recipe if recipe else {"error": "Recipe not found"}
+    except Exception as e:
+        return {"error": f"Failed to parse response: {str(e)}"}
 
 easyTool = Tool(
     name="easyRecipeTool",
@@ -60,5 +80,4 @@ proTool = Tool(
     func=lambda inputs: pro_tool(inputs),
     description="Gives a professional-level recipe to the user."
 )
-
 

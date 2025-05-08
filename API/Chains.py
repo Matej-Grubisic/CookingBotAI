@@ -1,4 +1,4 @@
-from langchain_community.llms import Ollama  # for completion-style models
+from langchain_community.llms import Ollama
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableSequence
 from langchain_core.output_parsers import StrOutputParser

@@ -8,15 +8,24 @@ from langchain_community.llms.ollama import Ollama
 from langchain_community.chat_models import ChatOllama
 from API.Chains import easy_chain, medium_chain, hard_chain, pro_chain
 from pydantic import BaseModel
+from Agent import run_agent
 
 
 app = FastAPI()
 
 
-
-class UserRequest(BaseModel):
+class AgentRequest(BaseModel):
     message: str
     food_style: str
+    difficulty: str
+
+class UserRequest(BaseModel):
+
+    message: str
+    food_style: str
+    difficulty: str
+
+
 
 llm = ChatOllama(model="ChatAI")
 
@@ -58,6 +67,21 @@ async def pro_recipe(request: UserRequest):
     })
 
     return {"Pro Recipe: ": generated_answer}
+
+def format_user_input(level: str, message: str, food_style: str) -> str:
+    return f"Give me a {level} recipe for this: {message}. The food style is {food_style}."
+
+@app.post("/recipes/{level}")
+async def generate_recipe(level: str, request: UserRequest):
+    formatted_input = format_user_input(level, request.message, request.food_style)
+    result = run_agent(level, formatted_input)
+    return {f"{level.capitalize()} Recipe": result}
+
+@app.post("/agent-recipe")
+async def agent_recipe(request: AgentRequest):
+    formatted = f"Give me a {request.difficulty} recipe for this: {request.message}. The food style is {request.food_style}."
+    result = run_agent(request.difficulty, formatted)
+    return {"response": result}
 
 
 if __name__ == "__main__":

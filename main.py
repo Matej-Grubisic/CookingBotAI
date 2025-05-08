@@ -1,4 +1,6 @@
 import flet as ft
+from API.Agent import run_agent
+import json
 
 def main(page: ft.Page):
     page.title = "Cooking Bot AI"
@@ -6,10 +8,8 @@ def main(page: ft.Page):
     page.theme_mode = "light"
     page.padding = 30
 
-    # Message/chat area
     messages = ft.ListView(expand=True, spacing=10, auto_scroll=True)
 
-    # Cooking style dropdown
     dropdown_style = ft.Dropdown(
         label="Cooking Style",
         options=[
@@ -21,7 +21,6 @@ def main(page: ft.Page):
         width=200,
     )
 
-    # Difficulty dropdown
     dropdown_difficulty = ft.Dropdown(
         label="Difficulty",
         options=[
@@ -33,7 +32,6 @@ def main(page: ft.Page):
         width=150,
     )
 
-    # Ingredients input box
     ingredients_input = ft.TextField(
         hint_text="Enter ingredients (e.g. chicken, garlic, rice)...",
         multiline=True,
@@ -42,7 +40,6 @@ def main(page: ft.Page):
         expand=True,
     )
 
-    # Button click logic
     def respond(e):
         style = dropdown_style.value
         difficulty = dropdown_difficulty.value
@@ -53,16 +50,28 @@ def main(page: ft.Page):
         elif not ingredients:
             messages.controls.append(ft.Text("⚠️ Please enter some ingredients.", color="red"))
         else:
-            # User message
             user_msg = ft.Text(
                 f"🧑‍💻 You: I have {ingredients} and want a {difficulty} {style} recipe.",
                 weight="bold"
             )
             messages.controls.append(user_msg)
 
-            # Bot response
+            try:
+                input_data = json.dumps({
+                    "message": ingredients,
+                    "food_style": style,
+                    "difficulty": difficulty
+                })
+
+                response = run_agent(difficulty, input_data)
+
+                recipe = response if isinstance(response, str) else "❌ Error: Response is not a valid string."
+
+            except Exception as ex:
+                recipe = f"❌ Error generating recipe: {str(ex)}"
+
             bot_msg = ft.Text(
-                f"🤖 Cooking Bot: Here's a {difficulty} {style} recipe using your ingredients:\n[Recipe goes here...]",
+                f"🤖 Cooking Bot:\n{recipe}",
                 italic=True
             )
             messages.controls.append(bot_msg)
@@ -70,10 +79,8 @@ def main(page: ft.Page):
         ingredients_input.value = ""
         page.update()
 
-    # Send button
     send_btn = ft.ElevatedButton("Get Recipe", on_click=respond)
 
-    # Layout
     page.add(
         ft.Column(
             [
