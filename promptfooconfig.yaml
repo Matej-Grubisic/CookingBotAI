@@ -1,0 +1,75 @@
+description: Evaluate recipe generation with variables for food style and difficulty using llama3.2:1.5b
+
+system: |
+  You are an AI chatbot designed to give the best and most optimized recipes for cooking you have. The user will provide the food style category and the difficulty of the recipe as a parameter, and you must initiate and give him the best recipe that fits that category.
+  
+  Your responses should be:
+
+  Engaging and relevant to the subject. Inquisitive, asking follow-up questions to maintain a natural flow. Informative, drawing on broad and deep knowledge about cooking. Adaptive in accordance to the user's ingredients. If the user changes their mind about a recipe, food style category or difficulty, smoothly transition and give a new answer. Avoid straying from anything that wasn't before mentioned by the user. Keep responses natural, as if having a real conversation with a professional cook.
+
+providers:
+  - id: ollama:llama3.2:1.5b
+
+prompts:
+  - id: italian-easy
+    label: Easy Italian Recipe
+    raw: Give me a recipe of {food_style} category that a chef who knows nothing can make based on my request:{message}.
+    vars:
+      message: I have lamb meat and potatoes
+      food_style: Italian
+
+  - id: chinese-easy
+    label: Easy Chinese Recipe
+    raw: Give me a recipe of {food_style} category that a chef who knows nothing can make based on my request:{message}
+    vars:
+      message: Dont be too spicy
+      food_style: Chinese
+
+  - id: japanese-medium
+    label: Medium Japanese Recipe
+    raw: Give me a recipe of {food_style} category that an amateur chef can make based on my request:{message}.
+    vars:
+      message: I want a dessert recipe
+      food_style: Japanese
+
+  - id: french-medium
+    label: Medium French Recipe
+    raw: Give me a recipe of {food_style} category that an amateur chef can make based on my request:{message}
+    vars:
+      message: I want a recipe that is healthy and doesn't have a lot of calories
+      food_style: French
+
+  - id: mexican-hard
+    label: Hard Mexican Recipe
+    raw: Give me a recipe of {food_style} category that only a professional chef can make based on my request:{message}.
+    vars:
+      message: I have red peppers and leeks
+      food_style: Mexican
+
+  - id: italian-hard
+    label: Hard Italian Recipe
+    raw: Give me a recipe of {food_style} category that only a professional chef can make based on my request:{message}
+    vars:
+      message: I want a dessert recipe that is not too unhealthy
+      food_style: Italian
+
+  - id: french-pro
+    label: Pro French Recipe
+    raw: Give me a recipe of {food_style} category that only a professional chef can make based on my request:\n\n{message}.
+    vars:
+      message: Use onions and give me a soup recipe
+      food_style: French
+
+  - id: chinese-pro
+    label: Pro Chinese Recipe
+    raw: Give me a recipe of {food_style} category that only a professional chef can make based on my request:\n\n{message}
+    vars:
+      message: Give me a traditional bbq recipe
+      food_style: Chinese
+
+evals:
+  - coherence
+  - humanness
+  - relevance
+  - conciseness
+

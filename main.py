@@ -59,8 +59,7 @@ def main(page: ft.Page):
             try:
                 input_data = json.dumps({
                     "message": ingredients,
-                    "food_style": style,
-                    "difficulty": difficulty
+                    "food_style": style
                 })
 
                 response = run_agent(difficulty, input_data)

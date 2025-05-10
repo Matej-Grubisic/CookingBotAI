@@ -9,3 +9,36 @@ GET http://127.0.0.1:8000/hello/User
 Accept: application/json
 
 ###
+
+
+# curl -X 'POST'
+#  'http://localhost:8000/recipes/hard'
+#  -H 'accept: application/json'
+#  -H 'Content-Type: application/json'
+#  -d '{
+#  "message": "chicken, tomato, potato",
+#  "food_style": "Italian",
+#  "difficulty": "easy"
+#}'
+POST http://localhost:8000/recipes/easy
+accept: application/json
+Content-Type: application/json
+
+{
+  "message": "chicken, tomato, potato",
+  "food_style": "Italian"
+}
+
+###
+
+POST http://localhost:8000/recipes/medium
+accept: application/json
+Content-Type: application/json
+
+{
+  "message": "chicken, tomato, potato",
+  "food_style": "Japanese"
+}
+
+###
+
