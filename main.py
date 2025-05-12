@@ -1,5 +1,5 @@
 import flet as ft
-from API.Agent import run_agent
+from API.Agent import run_agent, run_pdf_tool
 import json
 
 def main(page: ft.Page):
@@ -9,6 +9,32 @@ def main(page: ft.Page):
     page.padding = 30
 
     messages = ft.ListView(expand=True, spacing=10, auto_scroll=True)
+
+    imported_file_text = ft.Text(value="", italic=True, size=12)
+
+    def pick_files_result(e: ft.FilePickerResultEvent):
+        if e.files:
+            file_name = e.files[0].name
+            file_path = e.files[0].path
+            response = run_pdf_tool(file_path)
+            bot_msg = ft.Text(f"🤖 Cooking Bot:\n{response}", italic=True)
+            messages.controls.append(bot_msg)
+            ingredients_input.value = ""
+            imported_file_text.value = f"📄 Imported: {file_name}"
+        else:
+            imported_file_text.value = ""
+        page.update()
+
+    pick_files_dialog = ft.FilePicker(on_result=pick_files_result)
+    page.overlay.append(pick_files_dialog)
+
+    import_button = ft.ElevatedButton(
+        text="Import Cookbook",
+        on_click=lambda _: pick_files_dialog.pick_files(
+            allow_multiple=False,
+            allowed_extensions=["pdf"]
+        ),
+    )
 
     dropdown_style = ft.Dropdown(
         label="Cooking Style",
@@ -27,7 +53,7 @@ def main(page: ft.Page):
             ft.dropdown.Option("Easy"),
             ft.dropdown.Option("Medium"),
             ft.dropdown.Option("Hard"),
-            ft.dropdown.Option("Pro"),
+            ft.dropdown.Option("Pro")
         ],
         width=150,
     )
@@ -59,7 +85,7 @@ def main(page: ft.Page):
             try:
                 input_data = json.dumps({
                     "message": ingredients,
-                    "food_style": style
+                    "food_style": style,
                 })
 
                 response = run_agent(difficulty, input_data)
@@ -83,7 +109,13 @@ def main(page: ft.Page):
     page.add(
         ft.Column(
             [
-                ft.Text("🍳 Cooking Bot AI", size=32, weight="bold"),
+                ft.Row(
+                    [
+                        ft.Text("🍳 Cooking Bot AI", size=32, weight="bold"),
+                        ft.Column([import_button, imported_file_text], horizontal_alignment=ft.CrossAxisAlignment.END)
+                    ],
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                ),
                 ft.Row([dropdown_style, dropdown_difficulty], spacing=20),
                 ft.Container(messages, expand=True),
                 ft.Row([ingredients_input, send_btn], alignment=ft.MainAxisAlignment.END),
