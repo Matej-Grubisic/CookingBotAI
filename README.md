@@ -36,6 +36,21 @@ or
 python.exe main.py
 ```
 
+## Run Backend in Docker
+
+Just go to the directory and run:
+
+```
+docker compose up
+```
+
+And open:
+
+```
+http://localhost:8000/docs
+```
+
+
 ## Promptfoo Testing
 have promptfoo installed:
 ```

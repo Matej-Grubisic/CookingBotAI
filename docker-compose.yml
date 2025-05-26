@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  app:
+    image: python:3.11-slim
+    working_dir: /
+    volumes:
+      - ./API:/API
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "pip install fastapi uvicorn httpx langchain langchain_community && uvicorn API.Api:app --host 0.0.0.0 --port 8000"
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    networks:
+      - backend
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_models:/root/.ollama
+    networks:
+      - backend
+    privileged: true
+
+volumes:
+  ollama_models:
+
+networks:
+  backend:
+    driver: bridge
